@@ -32,13 +32,25 @@ print("\nAvailable Ports:\n")
 for port, desc, hwid in serial.tools.list_ports.comports():
     print("{} : {} [{}]".format(port, desc, hwid))
     if "openmv" in desc.lower():
-        port_name = port
+        if port_name == '':
+            port_name = port
+        else:
+            port_name = '?'
 
-sys.stdout.write("\nPlease enter a port name: ")
+if "openmv" not in port_name.lower():
+    sys.stdout.write("\nPlease enter a port name: ")
+    port_name = input()
+
 print(port_name)
 sys.stdout.flush()
 
-interface = rpc.rpc_usb_vcp_master(port_name) #input())
+try:
+    interface = rpc.rpc_usb_vcp_master(port_name)
+except serial.serialutil.SerialException as err:
+    print(err)
+    print("Press Enter to continue")
+    input()
+    exit(0)
 print("")
 sys.stdout.flush()
 
@@ -210,7 +222,7 @@ screen_w = 1280
 screen_h = 600
 screen = pygame.display.set_mode((screen_w, screen_h))
 
-pygame.display.set_caption("Frame Buffer")
+pygame.display.set_caption("OpenKostyl")
 clock = pygame.time.Clock()
 
 take_thr_from_cam = True
@@ -603,7 +615,7 @@ while(True):
     # by modifying the below arguments.
     msg = base_cam_arguments + ";"
     result = interface.call("jpeg_image_stream", msg)
-    print('send', msg)
+    print('connecting... send', msg)
     if result is not None:
         # THE REMOTE DEVICE WILL START STREAMING ON SUCCESS. SO, WE NEED TO RECEIVE DATA IMMEDIATELY.
         interface.stream_reader(jpg_frame_buffer_cb, queue_depth=8)
