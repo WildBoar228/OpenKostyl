@@ -7,7 +7,7 @@
 import io, pygame, rpc, serial, serial.tools.list_ports, socket, sys, time
 from PIL import Image, ImageOps
 import numpy as np
-# from skimage.color import rgb2lab
+from skimage.color import rgb2lab
 from widgets import *
 
 # Fix Python 2.x.
@@ -49,6 +49,7 @@ sys.stdout.flush()
 
 try:
     interface = rpc.rpc_usb_vcp_master(port_name)
+    pass
 except serial.serialutil.SerialException as err:
     print(err)
     print("Press Enter to continue")
@@ -66,39 +67,39 @@ sys.stdout.flush()
 # interface = rpc.rpc_network_master(slave_ip="xxx.xxx.xxx.xxx", my_ip="", port=0x1DBA)
 
 
-def rgb2lab(image):
-    r, g, b = image[:,:,0], image[:,:,1], image[:,:,2]
-    r = r / 255.0
-    g = g / 255.0
-    b = b / 255.0
+# def rgb2lab(image):
+#     r, g, b = image[:,:,0], image[:,:,1], image[:,:,2]
+#     r = r / 255.0
+#     g = g / 255.0
+#     b = b / 255.0
 
-    def rgb_to_xyz(rgb):
-        mask = rgb > 0.04045
-        rgb[mask] = np.power((rgb[mask] + 0.055) / 1.055, 2.4)
-        rgb[~mask] /= 12.92
-        return rgb * 100
+#     def rgb_to_xyz(rgb):
+#         mask = rgb > 0.04045
+#         rgb[mask] = np.power((rgb[mask] + 0.055) / 1.055, 2.4)
+#         rgb[~mask] /= 12.92
+#         return rgb * 100
 
-    xyz_r, xyz_g, xyz_b = rgb_to_xyz(r), rgb_to_xyz(g), rgb_to_xyz(b)
-    x = (xyz_r * 0.4124564 + xyz_g * 0.3575761 + xyz_b * 0.1804375) / 95.047
-    y = (xyz_r * 0.2126729 + xyz_g * 0.7151522 + xyz_b * 0.072175) / 100.0
-    z = (xyz_r * 0.0193339 + xyz_g * 0.119192 + xyz_b * 0.9503041) / 108.883
+#     xyz_r, xyz_g, xyz_b = rgb_to_xyz(r), rgb_to_xyz(g), rgb_to_xyz(b)
+#     x = (xyz_r * 0.4124564 + xyz_g * 0.3575761 + xyz_b * 0.1804375) / 95.047
+#     y = (xyz_r * 0.2126729 + xyz_g * 0.7151522 + xyz_b * 0.072175) / 100.0
+#     z = (xyz_r * 0.0193339 + xyz_g * 0.119192 + xyz_b * 0.9503041) / 108.883
 
-    def xyz_to_lab(xyz):
-        mask = xyz > 0.008856
-        xyz[mask] = np.power(xyz[mask], 1.0 / 3.0)
-        xyz[~mask] = (xyz[~mask] * 7.787) + (16.0 / 116.0)
-        return (116.0 * xyz) - 16.0
+#     def xyz_to_lab(xyz):
+#         mask = xyz > 0.008856
+#         xyz[mask] = np.power(xyz[mask], 1.0 / 3.0)
+#         xyz[~mask] = (xyz[~mask] * 7.787) + (16.0 / 116.0)
+#         return (116.0 * xyz) - 16.0
 
-    lab_l = xyz_to_lab(y)
-    lab_a = 500 * (xyz_to_lab(x / 0.95047) - xyz_to_lab(y))
-    lab_b = 200 * (xyz_to_lab(y) - xyz_to_lab(z / 1.08883))
+#     lab_l = xyz_to_lab(y)
+#     lab_a = 500 * (xyz_to_lab(x / 0.95047) - xyz_to_lab(y))
+#     lab_b = 200 * (xyz_to_lab(y) - xyz_to_lab(z / 1.08883))
 
-    lab_image = np.zeros_like(image, dtype=np.float32)
-    lab_image[:,:,0] = lab_l
-    lab_image[:,:,1] = lab_a
-    lab_image[:,:,2] = lab_b
+#     lab_image = np.zeros_like(image, dtype=np.float32)
+#     lab_image[:,:,0] = lab_l
+#     lab_image[:,:,1] = lab_a
+#     lab_image[:,:,2] = lab_b
 
-    return lab_image
+#     return lab_image
 
 
 def threshold_filter(thr, pixels):
@@ -454,10 +455,11 @@ def jpg_frame_buffer_cb(data):
     try:
         if not is_pause:
             widgets['img_src'].pixels = np.rot90(np.array(ImageOps.mirror(image)), k=1)
-            pixels_LAB = np.rot90(np.array(ImageOps.mirror(image.convert('LAB')), dtype=np.float32), k=1)
-            pixels_LAB[:,:,0] = pixels_LAB[:,:,0] * 100 // 255
-            pixels_LAB[:,:,1] -= 128
-            pixels_LAB[:,:,2] -= 128
+            # pixels_LAB = np.rot90(np.array(ImageOps.mirror(image.convert('LAB')), dtype=np.float32), k=1)
+            # pixels_LAB[:,:,0] = pixels_LAB[:,:,0] * 100 // 255
+            # pixels_LAB[:,:,1] -= 128
+            # pixels_LAB[:,:,2] -= 128
+            pixels_LAB = rgb2lab(widgets['img_src'].pixels)
     except Exception as exc:
         print(exc)
         return
