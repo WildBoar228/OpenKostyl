@@ -27,6 +27,7 @@ except NameError: pass
 #
 
 port_name = ""
+port_desc = ""
 
 print("\nAvailable Ports:\n")
 for port, desc, hwid in serial.tools.list_ports.comports():
@@ -34,10 +35,12 @@ for port, desc, hwid in serial.tools.list_ports.comports():
     if "openmv" in desc.lower():
         if port_name == '':
             port_name = port
+            port_desc = desc
         else:
             port_name = '?'
+            port_desc = ''
 
-if "openmv" not in port_name.lower():
+if "openmv" not in port_desc.lower():
     sys.stdout.write("\nPlease enter a port name: ")
     port_name = input()
 
