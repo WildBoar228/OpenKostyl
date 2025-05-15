@@ -5,6 +5,8 @@
 * https://github.com/openmv/openmv/blob/master/scripts/examples/08-RPC-Library/34-Remote-Control/image_transfer_jpg_as_the_remote_device_for_your_computer.py
 * https://www.youtube.com/watch?v=x0u_ntilVyA
 
+В случае возникновения технических неполадок пишите: @wildboar228 (Telegram)
+
 ## Начало использования
 В файле requirements.txt перечислены зависимости проекта, которые можно установить на интерпретатор Python или в виртуальное окружение, введя в терминале `pip install -r requirements.txt`.
 
