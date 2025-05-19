@@ -68,7 +68,6 @@ sys.stdout.flush()
 
 
 # def rgb2lab(image):
-#     image = image.astype(np.float32)
 #     r, g, b = image[:,:,0], image[:,:,1], image[:,:,2]
 #     r = r / 255.0
 #     g = g / 255.0
@@ -81,19 +80,23 @@ sys.stdout.flush()
 #         return rgb * 100
 
 #     xyz_r, xyz_g, xyz_b = rgb_to_xyz(r), rgb_to_xyz(g), rgb_to_xyz(b)
-#     x = (xyz_r * 0.4124564 + xyz_g * 0.3575761 + xyz_b * 0.1804375) / 95.047
-#     y = (xyz_r * 0.2126729 + xyz_g * 0.7151522 + xyz_b * 0.072175) / 100.0
-#     z = (xyz_r * 0.0193339 + xyz_g * 0.119192 + xyz_b * 0.9503041) / 108.883
+#     x = (xyz_r * 0.4124564 + xyz_g * 0.3575761 + xyz_b * 0.1804375)# / 95.047
+#     y = (xyz_r * 0.2126729 + xyz_g * 0.7151522 + xyz_b * 0.072175)# / 100.0
+#     z = (xyz_r * 0.0193339 + xyz_g * 0.119192 + xyz_b * 0.9503041)# / 108.883
 
 #     def xyz_to_lab(xyz):
 #         mask = xyz > 0.008856
-#         xyz[mask] = np.power(xyz[mask], 1.0 / 3.0)
+#         xyz[mask] = np.cbrt(xyz[mask])
 #         xyz[~mask] = (xyz[~mask] * 7.787) + (16.0 / 116.0)
-#         return (116.0 * xyz) - 16.0
+#         return xyz
+    
+#     x = xyz_to_lab(x)
+#     y = xyz_to_lab(y)
+#     z = xyz_to_lab(z)
 
-#     lab_l = xyz_to_lab(y)
-#     lab_a = 500 * (xyz_to_lab(x / 0.95047) - xyz_to_lab(y))
-#     lab_b = 200 * (xyz_to_lab(y) - xyz_to_lab(z / 1.08883))
+#     lab_l = (116.0 * y) - 16.0
+#     lab_a = 500 * (x / 0.95047 - y)
+#     lab_b = 200 * (y - z / 1.08883)
 
 #     lab_image = np.zeros_like(image, dtype=np.float32)
 #     lab_image[:,:,0] = lab_l
@@ -113,7 +116,7 @@ def filter_L(thr, pixels):
     labpix = pixels #rgb2lab(pixels / 255).astype(np.int8)
     ind_low = labpix[:,:,0] < thr[0]
     ind_high = labpix[:,:,0] > thr[1]
-    ind_ok = (labpix[:,:,0] >= thr[0]) * (labpix[:,:,0] <= thr[1])
+    ind_ok = ((~ind_low) & (~ind_high))
     labpix[ind_low] = np.array([0, 0, 0])
     labpix[ind_ok] = np.array([255, 255, 255])
     labpix[ind_high] = np.array([100, 100, 100])
@@ -124,7 +127,7 @@ def filter_A(thr, pixels):
     labpix = pixels #rgb2lab(pixels / 255).astype(np.int8)
     ind_low = labpix[:,:,1] < thr[2]
     ind_high = labpix[:,:,1] > thr[3]
-    ind_ok = (labpix[:,:,1] >= thr[2]) * (labpix[:,:,1] <= thr[3])
+    ind_ok = ((~ind_low) & (~ind_high))
     labpix[ind_low] = np.array([0, 100, 0])
     labpix[ind_ok] = np.array([255, 255, 255])
     labpix[ind_high] = np.array([100, 0, 0])
@@ -135,7 +138,7 @@ def filter_B(thr, pixels):
     labpix = pixels #rgb2lab(pixels / 255).astype(np.int8)
     ind_low = labpix[:,:,2] < thr[4]
     ind_high = labpix[:,:,2] > thr[5]
-    ind_ok = (labpix[:,:,2] >= thr[4]) * (labpix[:,:,1] <= thr[5])
+    ind_ok = ((~ind_low) & (~ind_high))
     labpix[ind_low] = np.array([0, 0, 100])
     labpix[ind_ok] = np.array([255, 255, 255])
     labpix[ind_high] = np.array([80, 80, 0])
