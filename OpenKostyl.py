@@ -68,6 +68,7 @@ sys.stdout.flush()
 
 
 # def rgb2lab(image):
+#     image = image.astype(np.float32)
 #     r, g, b = image[:,:,0], image[:,:,1], image[:,:,2]
 #     r = r / 255.0
 #     g = g / 255.0
@@ -400,7 +401,7 @@ widgets = {'img_src': ImageNumpy(screen, pygame.Rect(20, 60, 320, 240), source=p
                                 colors={'normal': (0, 0, 0),
                                         'pressed': (100, 100, 100)})
 }
-pixels_LAB = None
+pixels_LAB = np.array([])
 wnames = list(widgets.keys())
 bg_names = ['bg_slider_L_low', 'bg_slider_L_high',
             'bg_slider_A_low', 'bg_slider_A_high',
@@ -455,14 +456,15 @@ def jpg_frame_buffer_cb(data):
     try:
         if not is_pause:
             widgets['img_src'].pixels = np.rot90(np.array(ImageOps.mirror(image)), k=1)
-            # pixels_LAB = np.rot90(np.array(ImageOps.mirror(image.convert('LAB')), dtype=np.float32), k=1)
-            # pixels_LAB[:,:,0] = pixels_LAB[:,:,0] * 100 // 255
-            # pixels_LAB[:,:,1] -= 128
-            # pixels_LAB[:,:,2] -= 128
-            pixels_LAB = rgb2lab(widgets['img_src'].pixels)
     except Exception as exc:
         print(exc)
         return
+    
+    # pixels_LAB = np.rot90(np.array(ImageOps.mirror(image.convert('LAB')), dtype=np.float32), k=1)
+    # pixels_LAB[:,:,0] = pixels_LAB[:,:,0] * 100 // 255
+    # pixels_LAB[:,:,1] -= 128
+    # pixels_LAB[:,:,2] -= 128
+    pixels_LAB = rgb2lab(widgets['img_src'].pixels)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
