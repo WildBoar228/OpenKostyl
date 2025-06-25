@@ -42,7 +42,7 @@ for port, desc, hwid in serial.tools.list_ports.comports():
 
 if "openmv" not in port_desc.lower():
     sys.stdout.write("\nPlease enter a port name: ")
-    port_name = "COM1" #input()
+    port_name = input()
 
 print(port_name)
 sys.stdout.flush()
@@ -468,20 +468,20 @@ def jpg_frame_buffer_cb(data):
     pygame.draw.rect(screen, (200, 200, 200),
                      (0, 0, screen_w, screen_h))
     
-    # cam_thr = str(data[:300])
-    # #print(cam_thr, len(cam_thr))
-    # if take_thr_from_cam:
-    #     take_thr_from_cam = False
-    #     cam_thr = cam_thr[cam_thr.find('['):cam_thr.rfind(']') + 1]
-    #     thresholds = eval(cam_thr)
-    #     set_thr_to_sliders()
+    cam_thr = str(data[:300])
+    #print(cam_thr, len(cam_thr))
+    if take_thr_from_cam:
+        take_thr_from_cam = False
+        cam_thr = cam_thr[cam_thr.find('['):cam_thr.rfind(']') + 1]
+        thresholds = eval(cam_thr)
+        set_thr_to_sliders()
 
-    # data = data[300:]
-    # #print(cam_thr, len(cam_thr))
-    # print(len(cam_thr))
+    data = data[300:]
+    #print(cam_thr, len(cam_thr))
+    print(len(cam_thr))
 
     try:
-        image = tomsk # Image.open(io.BytesIO(data)) #'tomsk.bmp'
+        image = Image.open(io.BytesIO(data)) #'tomsk.bmp'
     except Exception as exc:
         print(exc)
         return
@@ -652,16 +652,14 @@ print(base_cam_arguments)
 while(True):
     sys.stdout.flush()
 
-    jpg_frame_buffer_cb(None)
-
-    # # You may change the pixformat and the framesize of the image transferred from the remote device
-    # # by modifying the below arguments.
-    # msg = base_cam_arguments + ";"
-    # result = interface.call("jpeg_image_stream", msg)
-    # print('connecting... send', msg)
-    # if result is not None:
-    #     # THE REMOTE DEVICE WILL START STREAMING ON SUCCESS. SO, WE NEED TO RECEIVE DATA IMMEDIATELY.
-    #     interface.stream_reader(jpg_frame_buffer_cb, queue_depth=8)
+    # You may change the pixformat and the framesize of the image transferred from the remote device
+    # by modifying the below arguments.
+    msg = base_cam_arguments + ";"
+    result = interface.call("jpeg_image_stream", msg)
+    print('connecting... send', msg)
+    if result is not None:
+        # THE REMOTE DEVICE WILL START STREAMING ON SUCCESS. SO, WE NEED TO RECEIVE DATA IMMEDIATELY.
+        interface.stream_reader(jpg_frame_buffer_cb, queue_depth=8)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
