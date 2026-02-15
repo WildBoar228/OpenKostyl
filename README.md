@@ -1,6 +1,8 @@
 # OpenKostyl
 Проект создан командой White Wings для упрощения и ускорения калибровки цветовых диапазонов на камерах OpenMV. Программа запускается на компьютере, обмениваясь информацией с камерой.
 
+Актуальная версия: [UniKostyl](https://github.com/WildBoar228/UniKostyl)
+
 За основу были взяты следующие материалы, предоставленные OpenMV:
 * https://github.com/openmv/openmv/blob/master/scripts/examples/08-RPC-Library/34-Remote-Control/image_transfer_jpg_as_the_remote_device_for_your_computer.py
 * https://www.youtube.com/watch?v=x0u_ntilVyA
